@@ -263,39 +263,7 @@ export default function App() {
     filtroPrioridade !== 'Todas' ||
     buscaTexto.trim().length > 0;
 
-  // Popula 12 tarefas de exemplo
-  const carregarDadosExemplo = async () => {
-    if (!db) return;
-    try {
-      setCarregando(true);
-      const exemplos = [
-        { titulo: 'Entregar trabalho de SQLite', descricao: 'Conectar DDM2.db e demonstrar CRUD', categoria: 'Estudos', prioridade: 'Alta' as Prioridade },
-        { titulo: 'Comprar frutas e legumes', descricao: 'Maçã, banana, tomate e alface', categoria: 'Casa', prioridade: 'Média' as Prioridade },
-        { titulo: 'Treino de pernas na academia', descricao: 'Agachamento e leg press', categoria: 'Pessoal', prioridade: 'Baixa' as Prioridade },
-        { titulo: 'Revisar pull request da API', descricao: 'Validar rotas do banco de dados', categoria: 'Trabalho', prioridade: 'Alta' as Prioridade },
-        { titulo: 'Pagar fatura do cartão', descricao: 'Vencimento próximo dia 25', categoria: 'Pessoal', prioridade: 'Alta' as Prioridade },
-        { titulo: 'Organizar armário do quarto', descricao: 'Separar roupas para doação', categoria: 'Casa', prioridade: 'Baixa' as Prioridade },
-        { titulo: 'Estudar ciclo de vida do React Native', descricao: 'Hooks useEffect e useCallback', categoria: 'Estudos', prioridade: 'Média' as Prioridade },
-        { titulo: 'Reunião diária de alinhamento', descricao: 'Apresentar status dos módulos', categoria: 'Trabalho', prioridade: 'Média' as Prioridade },
-        { titulo: 'Agendar consulta com dentista', descricao: 'Limpeza semestral', categoria: 'Pessoal', prioridade: 'Baixa' as Prioridade },
-        { titulo: 'Limpar os filtros do ar condicionado', descricao: 'Fazer manutenção preventiva', categoria: 'Casa', prioridade: 'Média' as Prioridade },
-        { titulo: 'Configurar Expo Router no projeto', descricao: 'Preparar navegação por abas', categoria: 'Estudos', prioridade: 'Alta' as Prioridade },
-        { titulo: 'Fazer backup do banco SQLite', descricao: 'Exportar cópia de segurança', categoria: 'Trabalho', prioridade: 'Alta' as Prioridade },
-      ];
 
-      for (const item of exemplos) {
-        await insertTarefa(db, item);
-      }
-      limparFiltros();
-      setPagina(1);
-      await carregarTarefas(db, 1);
-      Alert.alert('Pronto!', '12 tarefas de exemplo inseridas para testar a paginação e filtros.');
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao inserir tarefas de exemplo.');
-    } finally {
-      setCarregando(false);
-    }
-  };
 
   const totalPaginas = Math.ceil(totalTarefas / ITENS_POR_PAGINA) || 1;
 
@@ -623,19 +591,7 @@ export default function App() {
                   </TouchableOpacity>
                 ) : (
                   <>
-                    <TouchableOpacity
-                      style={styles.btnAdicionarVazio}
-                      onPress={abrirModalCadastro}
-                    >
-                      <Text style={styles.btnAdicionarVazioTexto}>+ Criar Tarefa</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.btnExemplos}
-                      onPress={carregarDadosExemplo}
-                    >
-                      <Text style={styles.btnExemplosTexto}>⚡ Gerar 12 Exemplos</Text>
-                    </TouchableOpacity>
+                    
                   </>
                 )}
               </View>

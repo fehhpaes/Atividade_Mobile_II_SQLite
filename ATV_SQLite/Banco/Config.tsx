@@ -220,13 +220,4 @@ export async function deleteTarefa(
   }
 }
 
-// Resetar tabela em testes se necessário
-export async function dropTableTarefas(db: SQLite.SQLiteDatabase): Promise<void> {
-  try {
-    await db.execAsync('DROP TABLE IF EXISTS tarefas;');
-    console.log('Tabela "tarefas" excluída com sucesso.');
-  } catch (error) {
-    console.error('Erro ao excluir tabela tarefas:', error);
-    throw error;
-  }
-}
+
