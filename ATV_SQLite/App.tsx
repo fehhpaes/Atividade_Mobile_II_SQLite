@@ -263,8 +263,6 @@ export default function App() {
     filtroPrioridade !== 'Todas' ||
     buscaTexto.trim().length > 0;
 
-
-
   const totalPaginas = Math.ceil(totalTarefas / ITENS_POR_PAGINA) || 1;
 
   // Cores de destaque por prioridade
@@ -386,7 +384,7 @@ export default function App() {
           onPress={abrirModalCadastro}
           activeOpacity={0.8}
         >
-          <Text style={styles.textoBtnNovaTarefa}>+ Nova</Text>
+          <Text style={styles.textoBtnNovaTarefa}>+ Adicionar</Text>
         </TouchableOpacity>
       </View>
 
@@ -578,23 +576,19 @@ export default function App() {
               <Text style={styles.emptySubtitulo}>
                 {temFiltroAtivo
                   ? 'Tente ajustar ou limpar os filtros para encontrar tarefas.'
-                  : 'Crie sua primeira tarefa ou gere exemplos para testar o SQLite.'}
+                  : 'Toque no botão "+ Adicionar" no canto superior para cadastrar sua primeira tarefa.'}
               </Text>
 
-              <View style={styles.emptyBotoes}>
-                {temFiltroAtivo ? (
+              {temFiltroAtivo && (
+                <View style={styles.emptyBotoes}>
                   <TouchableOpacity
-                    style={styles.btnAdicionarVazio}
+                    style={styles.btnLimparVazio}
                     onPress={limparFiltros}
                   >
-                    <Text style={styles.btnAdicionarVazioTexto}>Limpar Filtros</Text>
+                    <Text style={styles.btnLimparVazioTexto}>Limpar Filtros</Text>
                   </TouchableOpacity>
-                ) : (
-                  <>
-                    
-                  </>
-                )}
-              </View>
+                </View>
+              )}
             </View>
           }
         />
@@ -1146,33 +1140,19 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   emptyBotoes: {
-    flexDirection: 'column',
-    gap: 10,
     width: '100%',
-    maxWidth: 240,
+    maxWidth: 200,
   },
-  btnAdicionarVazio: {
+  btnLimparVazio: {
     backgroundColor: '#4F46E5',
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  btnAdicionarVazioTexto: {
+  btnLimparVazioTexto: {
     color: '#FFFFFF',
     fontWeight: '700',
-    fontSize: 14,
-  },
-  btnExemplos: {
-    backgroundColor: '#F3F4F6',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    paddingVertical: 11,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  btnExemplosTexto: {
-    color: '#374151',
-    fontWeight: '600',
     fontSize: 13,
   },
   modalOverlay: {
