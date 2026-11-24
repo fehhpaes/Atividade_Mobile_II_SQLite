@@ -25,6 +25,7 @@ import {
   toggleConcluidaTarefa,
   updateTarefa,
   deleteTarefa,
+  imprimirDadosConsole,
   Tarefa,
   Prioridade,
   Categoria,
@@ -66,6 +67,7 @@ export default function App() {
         const database = await Banco();
         await createTableTarefas(database);
         setDb(database);
+        await imprimirDadosConsole(database, 'App Inicializado');
       } catch (error) {
         Alert.alert('Erro', 'Não foi possível inicializar o banco de dados.');
         console.error(error);
@@ -151,6 +153,10 @@ export default function App() {
       const novoStatus = item.concluida === 1 ? 0 : 1;
       await toggleConcluidaTarefa(db, item.id, novoStatus);
       await carregarTarefas(db, pagina);
+      await imprimirDadosConsole(
+        db,
+        `Status da Tarefa ID ${item.id} alterado para [${novoStatus === 1 ? 'CONCLUÍDA' : 'PENDENTE'}]`
+      );
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível alterar o status da tarefa.');
     }
@@ -168,6 +174,14 @@ export default function App() {
 
   // Abrir Modal para Edição (UPDATE Completo)
   const abrirModalEdicao = (item: Tarefa) => {
+    if (item.concluida === 1) {
+      Alert.alert(
+        'Tarefa Concluída',
+        'Não é possível editar uma tarefa já concluída. Se precisar alterá-la, desmarque a conclusão no checkbox primeiro.'
+      );
+      return;
+    }
+
     setTarefaEditando(item);
     setTitulo(item.titulo);
     setDescricao(item.descricao || '');
@@ -194,8 +208,19 @@ export default function App() {
 
     try {
       if (tarefaEditando) {
+        if (tarefaEditando.concluida === 1) {
+          Alert.alert(
+            'Atenção',
+            'Esta tarefa já foi concluída e não pode ser alterada.'
+          );
+          setModalVisivel(false);
+          setTarefaEditando(null);
+          return;
+        }
+
         // UPDATE
-        await updateTarefa(db, tarefaEditando.id, {
+        const idAtualizado = tarefaEditando.id;
+        await updateTarefa(db, idAtualizado, {
           titulo,
           descricao,
           categoria,
@@ -203,10 +228,12 @@ export default function App() {
         });
         Alert.alert('Sucesso', 'Tarefa atualizada com sucesso!');
         setModalVisivel(false);
+        setTarefaEditando(null);
         await carregarTarefas(db, pagina);
+        await imprimirDadosConsole(db, `Tarefa ID ${idAtualizado} Atualizada`);
       } else {
         // CREATE
-        await insertTarefa(db, {
+        const novoId = await insertTarefa(db, {
           titulo,
           descricao,
           categoria,
@@ -217,6 +244,7 @@ export default function App() {
         // Volta para a página 1 para visualizar a nova tarefa inserida
         setPagina(1);
         await carregarTarefas(db, 1);
+        await imprimirDadosConsole(db, `Nova Tarefa ID ${novoId} Cadastrada`);
       }
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível salvar a tarefa.');
@@ -240,6 +268,7 @@ export default function App() {
               // Se esta for a única tarefa da página atual (e não estivermos na pág 1), recua
               const novaPagina = tarefas.length === 1 && pagina > 1 ? pagina - 1 : pagina;
               await carregarTarefas(db, novaPagina);
+              await imprimirDadosConsole(db, `Tarefa ID ${item.id} Excluída`);
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível excluir a tarefa.');
             }
@@ -347,11 +376,11 @@ export default function App() {
         {/* AÇÕES: EDITAR E EXCLUIR */}
         <View style={styles.acoesCard}>
           <TouchableOpacity
-            style={styles.btnEditar}
+            style={[styles.btnEditar, isConcluida && styles.btnEditarDesabilitado]}
             onPress={() => abrirModalEdicao(item)}
-            activeOpacity={0.7}
+            activeOpacity={isConcluida ? 0.9 : 0.7}
           >
-            <Text style={styles.textoBtnEditar}>✎</Text>
+            <Text style={[styles.textoBtnEditar, isConcluida && styles.textoBtnEditarDesabilitado]}>✎</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -1049,10 +1078,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  btnEditarDesabilitado: {
+    backgroundColor: '#F3F4F6',
+  },
   textoBtnEditar: {
     color: '#4F46E5',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  textoBtnEditarDesabilitado: {
+    color: '#9CA3AF',
   },
   btnExcluir: {
     backgroundColor: '#FEE2E2',
